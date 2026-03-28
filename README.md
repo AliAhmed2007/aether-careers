@@ -47,3 +47,34 @@ Make sure you have Node.js (v18+) and Docker installed on your machine.
    ```bash
    git clone [https://github.com/yourusername/nexus-jobs.git](https://github.com/AliAhmed2007/aether-careers.git)
    cd aether-careers
+   ```
+2. **Install dependencies**
+Bash
+
+npm install
+
+Set up environment variables
+Rename .env.example to .env and fill in the required keys.
+```Bash
+cp .env.example .env
+```
+
+3. **Spin up the Database**
+```Bash
+
+docker-compose up -d
+```
+
+4. **Run Database Migrations**
+
+```Bash
+npm run db:generate
+npm run db:migrate
+```
+
+5. **Start the development server**
+```Bash
+npm run dev
+```
+
+- Note: To test background jobs and webhooks locally, ensure your Ingest dev server is running (npm run ingest).
