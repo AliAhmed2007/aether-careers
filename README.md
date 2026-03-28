@@ -44,10 +44,10 @@ Make sure you have Node.js (v18+) and Docker installed on your machine.
 ### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone [https://github.com/yourusername/nexus-jobs.git](https://github.com/AliAhmed2007/aether-careers.git)
-   cd aether-careers
-   ```
+```bash
+git clone [https://github.com/yourusername/nexus-jobs.git](https://github.com/AliAhmed2007/aether-careers.git)
+cd aether-careers
+```
 2. **Install dependencies**
 Bash
 
