@@ -14,10 +14,10 @@ export const env = createEnv({
             const { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER, ...rest } = val
             return {
                 ...rest,
-                DATABASE_URL: `postegres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`
+                DATABASE_URL: `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`
             }
         })
-    }
+    },
     emptyStringAsUndefined: true,
     experimental__runtimeEnv: process.env,
 })
