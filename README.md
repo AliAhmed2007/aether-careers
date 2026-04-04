@@ -1,6 +1,6 @@
 Markdown
 
-# 🚀 Nexus Jobs | AI-Powered Job Board Platform
+# 🚀Aether Careers | AI-Powered Job Board Platform
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
@@ -49,49 +49,46 @@ Make sure you have Node.js (v18+) and Docker installed on your machine.
 ### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone [https://github.com/yourusername/nexus-jobs.git](https://github.com/yourusername/nexus-jobs.git)
+```bash
+   git clone [https://github.com/yourusername/nexus-jobs.git](https://github.com/AliAhmed2007aether-careers.git)
    cd nexus-jobs
 
-    Install dependencies
-    Bash
+    # Install dependencies
 
     npm install
 
-    Set up environment variables
+    # Set up environment variables
     Rename .env.example to .env and fill in the required keys.
-    Bash
 
     cp .env.example .env
 
-    Spin up the Database
+    # Spin up the Database
     Ensure Docker Desktop is running, then start the PostgreSQL container in the background:
-    Bash
 
     docker compose up -d
 
-    Run Database Migrations
-    Generate the Drizzle schemas and push them to your live local database:
-    Bash
+    # Run Database Migrations
+    # Generate the Drizzle schemas and push them to your live local database:
 
     npm run db:generate
     npx drizzle-kit push
 
-    Start the Development Server
-    Bash
-
+    # Start the Development Server
     npm run dev
 
-    Start the Ingest Server (Required for Webhooks & AI)
-    Open a second terminal window and run the Ingest local server to process background jobs:
-    Bash
-
+    # Start the Ingest Server (Required for Webhooks & AI)
+    # Open a second terminal window and run the Ingest local server to process background jobs:
     npm run ingest
 
-⚙️ Environment Variables (.env)
+   # Open Drizzle studio to manage your postegresql database
+   # Open a third terminal window and run this run drizzle studio command but make sure you have done the migrations:
+   npm run db:studio
 
+```
+## ⚙️ Environment Variables (.env)
 Create a .env file at the root of your project and configure the following variables:
-Code snippet
+
+```env
 
 # Database
 DB_HOST=127.0.0.1
@@ -118,42 +115,43 @@ RESEND_API_KEY=your_resend_api_key
 
 # Base Application URL
 NEXT_PUBLIC_SERVER_URL=http://localhost:3000
+```
 
-🧠 Architecture & Workflows
-The AI Ranking Engine
+## 🧠 Architecture & Workflows
+
+### The AI Ranking Engine
 
 When a job seeker applies for a position, the heavy lifting is offloaded from the main Next.js thread to Ingest.
 
-    The upload triggers a webhook.
+    - The upload triggers a webhook.
 
-    Ingest pulls the Job Description, the candidate's Cover Letter, and the generated Resume Summary.
+    - Ingest pulls the Job Description, the candidate's Cover Letter, and the generated Resume Summary.
 
-    AgentKit routes this payload to Gemini (or Claude), which acts as an expert hiring manager.
+    - AgentKit routes this payload to Gemini (or Claude), which acts as an expert hiring manager.
 
-    The AI returns a structured 1-5 star rating, which is written back to the PostgreSQL database for the employer to review.
+    - The AI returns a structured 1-5 star rating, which is written back to the PostgreSQL database for the employer to review.
 
-Database & Caching
+### Database & Caching
 
-The application utilizes Next.js 15's experimental dynamicIO and cache tagging. Instead of invalidating entire routes, database updates trigger hyper-specific cache tag validations (e.g., revalidating only job-listing-123-applications), ensuring instant UI updates without heavy re-renders.
-🤝 Contributing
+The application utilizes Next.js 16's experimental Cached Components and cache tagging. Instead of invalidating entire routes, database updates trigger hyper-specific cache tag validations (e.g., revalidating only job-listing-123-applications), ensuring instant UI updates without heavy re-renders.
+
+## 🤝 Contributing
 
 Contributions, issues, and feature requests are always welcome!
 
-    Fork the Project
+    - Fork the Project
 
-    Create your Feature Branch (git checkout -b feature/AmazingFeature)
+    - Create your Feature Branch (git checkout -b feature/AmazingFeature)
 
-    Commit your Changes (git commit -m 'Add some AmazingFeature')
+    - Commit your Changes (git commit -m 'Add some AmazingFeature')
 
-    Push to the Branch (git push origin feature/AmazingFeature)
+    - Push to the Branch (git push origin feature/AmazingFeature)
 
-    Open a Pull Request
+    - Open a Pull Request
 
-📄 License
+## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-🙏 Acknowledgments
+Acknowledgments:
 
-    Designed and inspired by the tutorial from Web Dev Simplified.
-
-    UI Components courtesy of shadcn/ui.
+    - Designed by Ali Ahmed and inspired by Kyle from WDS.
