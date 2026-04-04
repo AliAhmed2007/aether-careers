@@ -8,6 +8,13 @@
       "when": 1775136015879,
       "tag": "0000_chubby_leper_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775290734472,
+      "tag": "0001_brief_moon_knight",
+      "breakpoints": true
     }
   ]
 }
