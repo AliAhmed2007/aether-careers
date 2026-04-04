@@ -51,25 +51,20 @@ Make sure you have Node.js (v18+) and Docker installed on your machine.
 1. **Clone the repository**
 ```bash
    git clone [https://github.com/yourusername/nexus-jobs.git](https://github.com/AliAhmed2007aether-careers.git)
-   cd nexus-jobs
 
     # Install dependencies
-
     npm install
 
     # Set up environment variables
-    Rename .env.example to .env and fill in the required keys.
-
+    # Rename .env.example to .env and fill in the required keys.
     cp .env.example .env
 
     # Spin up the Database
-    Ensure Docker Desktop is running, then start the PostgreSQL container in the background:
-
+    # Ensure Docker Desktop is running, then start the PostgreSQL container in the background:
     docker compose up -d
 
     # Run Database Migrations
     # Generate the Drizzle schemas and push them to your live local database:
-
     npm run db:generate
     npx drizzle-kit push
 
@@ -89,7 +84,6 @@ Make sure you have Node.js (v18+) and Docker installed on your machine.
 Create a .env file at the root of your project and configure the following variables:
 
 ```env
-
 # Database
 DB_HOST=127.0.0.1
 DB_USER=postgres
