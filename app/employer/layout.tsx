@@ -9,21 +9,28 @@ import {
 } from "@/components/ui/sidebar";
 import SidebarOrganizationButton from "@/features/organizations/components/SidebarOrganizationButton";
 import SidebarUserButton from "@/features/users/components/SidebarUserButton";
-import {
-  BrainCircuitIcon,
-  ClipboardListIcon,
-  LayoutDashboard,
-  LogInIcon,
-  PlusIcon,
-} from "lucide-react";
+import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
+import { ClipboardListIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { redirect } from "next/navigation";
+import { ReactNode, Suspense } from "react";
 
 const jobSeekerLinks: SidebarItemType[] = [
   { href: "/", icon: <ClipboardListIcon />, label: "Job Board" },
 ];
 
-function EmployerLayout({ children }: { children: ReactNode }) {
+export default function EmployerLayout({ children }: { children: ReactNode }) {
+  return (
+    <Suspense>
+      <EmployerLayoutSuspense>{children}</EmployerLayoutSuspense>
+    </Suspense>
+  );
+}
+
+async function EmployerLayoutSuspense({ children }: { children: ReactNode }) {
+  const { orgId } = await getCurrentOrganization();
+  
+  if (orgId == null) redirect("/organizations/select");
   return (
     <AppSidebar
       content={
@@ -38,8 +45,6 @@ function EmployerLayout({ children }: { children: ReactNode }) {
     </AppSidebar>
   );
 }
-
-export default EmployerLayout;
 
 function CurrentJobListings() {
   return (

@@ -26,7 +26,6 @@ async function getUser(id: string) {
 
 export async function getCurrentOrganization({ allData = false } = {}) {
     const { orgId } = await auth()
-    console.log(orgId);
     return {
         orgId,
         organization: allData && orgId != null ? await getOrganization(orgId) : undefined,
