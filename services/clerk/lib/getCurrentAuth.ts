@@ -1,7 +1,7 @@
 import { db } from "@/drizzle/db"
 import { OrganizationTable, UserTable } from "@/drizzle/schema"
 import { getOrganizationIdTag } from "@/features/organizations/db/cache/organizations"
-import { getUserGlobalTag, getUserIdTag } from "@/features/users/db/cache/users"
+import { getUserIdTag } from "@/features/users/db/cache/users"
 import { auth } from "@clerk/nextjs/server"
 import { eq } from "drizzle-orm"
 import { cacheLife, cacheTag } from "next/cache"

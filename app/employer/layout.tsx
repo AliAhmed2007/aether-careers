@@ -8,7 +8,6 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import SidebarOrganizationButton from "@/features/organizations/components/SidebarOrganizationButton";
-import SidebarUserButton from "@/features/users/components/SidebarUserButton";
 import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
 import { ClipboardListIcon, PlusIcon } from "lucide-react";
 import Link from "next/link";

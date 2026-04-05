@@ -1,5 +1,4 @@
 "use client"
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -18,8 +17,6 @@ import {
   ChevronsUpDown,
   CreditCardIcon,
   LogOutIcon,
-  SettingsIcon,
-  UserIcon,
   UserRoundCogIcon,
 } from "lucide-react"
 import Link from "next/link"
