@@ -41,6 +41,33 @@ By integrating modern AI models, the platform moves beyond traditional keyword m
 * **File Storage:** UploadThing
 * **Emails:** Resend & React Email
 
+Project Architecture
+
+This codebase follows a Domain-Driven, Feature-Sliced Design. To keep the app scalable and maintainable, code is co-located by business domain (e.g., users, organizations) rather than technical type (e.g., dumping all components into one folder).
+Directory Layout
+```less
+ /app: Next.js App Router root. Handles routing, global layouts, and acts as the entry point. Consumers of logic, not creators.
+
+ /features: The core of the app. Isolated, domain-driven modules (e.g., /organizations, /users). Each domain fully encapsulates its own:
+
+  components/: UI strictly tied to this domain.
+
+  db/: Drizzle CRUD queries and cache invalidation.
+
+ /components: Global, reusable, "dumb" UI elements (e.g., buttons, Shadcn components). Absolutely no business logic or data fetching here.
+
+ /services: Wrappers for third-party APIs (e.g., /clerk for auth). Isolates vendor lock-in so external services can be swapped easily.
+
+ /drizzle: Centralized source of truth for DB schemas, connection instantiation, and migrations. (Actual queries live in /features).
+
+ /inngest: Event-driven background queues and async jobs (e.g., emails, cron jobs).
+
+ /data/env: Type-safe environment variable validation, strictly separated into server.ts and client.ts.
+
+ /lib & /hooks: Global utility functions (date/string formatting) and domain-agnostic React hooks.
+```
+💡 The Golden Rule: > If a file specifically knows about a business entity (like a "User" or "Organization"), it belongs inside /features/[domain]/. If it is completely generic, it goes in the global /components, /lib, or /hooks folders.
+
 ## 🚀 Getting Started
 
 ### Prerequisites
