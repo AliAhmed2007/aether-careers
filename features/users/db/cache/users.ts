@@ -12,4 +12,4 @@ export function getUserIdTag(id: string) {
 export function revalidateUserCache(id: string) {
   revalidateTag(getUserGlobalTag(), "default")
   revalidateTag(getUserIdTag(id), "default")
-} 
+}  
