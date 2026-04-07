@@ -1,8 +1,8 @@
-import { inngest, organizationCreatedEvent, userCreatedEvent, userDeletedEvent, userUpdatedEvent } from "../client";
+import { inngest, organizationCreatedEvent, organizationDeletedEvent, organizationUpdatedEvent, userCreatedEvent, userDeletedEvent, userUpdatedEvent } from "../client";
 import { NonRetriableError } from "inngest";
 import { deleteUser, insertUser, updateUser } from "@/features/users/db/users";
 import { insertUserNontificationSettings } from "@/features/users/db/usersNotificationSettings";
-import { insertOrganization } from "@/features/organizations/db/organizations";
+import { deleteOrganization, insertOrganization, updateOrganization } from "@/features/organizations/db/organizations";
 
 export const clerkCreateUser = inngest.createFunction(
     {
@@ -111,39 +111,35 @@ export const clerkCreateOrganization = inngest.createFunction(
     }
 );
 
-// export const clerkUpdateOrganization = inngest.createFunction(
-//     { id: "clerk/update-db-user", name: "Clerk - Update Database User", triggers: [{ event: userUpdatedEvent }] },
-//     async ({ event, step }) => {
-//         await step.run("update-user", async () => {
-//             const userData = event.data.data
-//             const email = userData.email_addresses.find(
-//                 email => email.id === userData.primary_email_address_id
-//             )
+export const clerkUpdateOrganization = inngest.createFunction(
+    { id: "clerk/update-db-organization", name: "Clerk - Update Database Organization", triggers: [{ event: organizationUpdatedEvent }] },
+    async ({ event, step }) => {
+        await step.run("update-organization", async () => {
+            const orgData = event.data?.data
 
-//             if (email == null) {
-//                 throw new NonRetriableError("No primary email address found")
-//             }
+            if (orgData == null) {
+                throw new NonRetriableError("No primary email address found")
+            }
 
-//             await updateUser(userData.id, {
-//                 name: `${userData.first_name} ${userData.last_name}`,
-//                 imageUrl: userData.image_url,
-//                 email: email.email_address,
-//                 updatedAt: new Date(userData.updated_at),
-//             })
-//         })
-//     }
-// )
+            await updateOrganization(orgData.id, {
+                name: orgData.name,
+                imageUrl: orgData.image_url,
+                updatedAt: new Date(orgData.updated_at),
+            })
+        })
+    }
+)
 
-// export const clerkDeleteOrganization = inngest.createFunction(
-//     { id: "clerk/delete-db-user", name: "Clerk - Delete Database User", triggers: [{ event: userDeletedEvent }] },
-//     async ({ event, step }) => {
-//         await step.run("delete-user", async () => {
-//             const id = event.data.data.id
+export const clerkDeleteOrganization = inngest.createFunction(
+    { id: "clerk/delete-db-organization", name: "Clerk - Delete Database Organization", triggers: [{ event: organizationDeletedEvent }] },
+    async ({ event, step }) => {
+        await step.run("delete-organization", async () => {
+            const id = event.data.data.id
 
-//             if (id == null) {
-//                 throw new NonRetriableError("No id found")
-//             }
-//             await deleteUser(id)
-//         })
-//     }
-// )
+            if (id == null) {
+                throw new NonRetriableError("No id found")
+            }
+            await deleteOrganization(id)
+        })
+    }
+)
