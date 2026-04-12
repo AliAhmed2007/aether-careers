@@ -30,6 +30,8 @@ import {
 } from "../lib/formatters";
 import { StateSelectItems } from "./StateSelectItems";
 import { MarkdownEditor } from "@/components/markdown/MarkdownEditor";
+import { createJobListing } from "../actions/actions";
+import { toast } from "sonner";
 // import { createJobListing, updateJobListing } from "../actions/actions";
 
 const UNSELECT_STATE_VALUE = "none";
@@ -67,13 +69,10 @@ export default function JobListingForm({
   });
 
   async function onSubmit(data: z.infer<typeof jobListingSchema>) {
-    // const action = jobListing
-    //   ? updateJobListing.bind(null, jobListing.id)
-    //   : createJobListing;
-    // const res = await action(data);
-    // if (res?.error) {
-    //   toast.error(res.message);
-    // }
+    const res = await createJobListing(data);
+    if (res?.error) {
+      toast.error(res.message);
+    }
   }
 
   return (
@@ -298,7 +297,7 @@ export default function JobListingForm({
       <Button
         disabled={form.formState.isSubmitting}
         type="submit"
-        className="w-full"
+        className="w-full cursor-pointer"
       >
         <LoadingSwap isLoading={form.formState.isSubmitting}>
           {jobListing ? "Update Job Listing" : "Create Job Listing"}

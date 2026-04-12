@@ -1,3 +1,4 @@
+"use server"
 import z from "zod";
 import { jobListingSchema } from "./schemas";
 import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
