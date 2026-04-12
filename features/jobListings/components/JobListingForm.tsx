@@ -284,12 +284,24 @@ export default function JobListingForm({
       </div>
 
       <Field>
-        <FieldLabel htmlFor="description">Description</FieldLabel>
+        <FieldLabel>Description</FieldLabel>
         <Controller
           name="description"
           control={form.control}
-          render={({ field }) => (
-            <MarkdownEditor {...field} markdown={field.value} />
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="description">Description</FieldLabel>
+              <div className="mdx-editor-wrapper">
+                <MarkdownEditor
+                  {...field}
+                  markdown={field.value}
+                  placeholder="Enter a job Description"
+                />
+              </div>
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} className="mt-2" />
+              )}
+            </Field>
           )}
         />
       </Field>
