@@ -32,7 +32,7 @@ export default function AppSidebar({
             <AppSidebarFooter footerBtn={footerBtn} />
           </Suspense>
         </Sidebar>
-        <main>{children}</main>
+        <main className="w-full">{children}</main>
       </AppSidebarClient>
     </SidebarProvider>
   );
