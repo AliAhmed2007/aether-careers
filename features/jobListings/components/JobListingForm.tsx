@@ -284,7 +284,6 @@ export default function JobListingForm({
       </div>
 
       <Field>
-        <FieldLabel>Description</FieldLabel>
         <Controller
           name="description"
           control={form.control}
