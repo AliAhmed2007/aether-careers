@@ -133,8 +133,19 @@
 
   .mdxeditor-root-contenteditable {
     min-height: 150px;
+    /* Use a variable or hex that matches your dark mode foreground */
+    color: oklch(0.985 0 0);
+
     @apply border-input has-focus-visible:border-ring has-focus-visible:ring-ring/50 dark:bg-input/30 rounded-md rounded-t-none border bg-transparent px-3 shadow-xs transition-[color_box-shadow] outline-none has-focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 overflow-hidden;
-    @apply prose prose-slate max-w-none dark:prose-invert;
+
+    /* Update this part 👇 */
+    @apply prose prose-invert max-w-none;
+
+    /* Force all headings and text inside the editor to be white */
+    & :is(h1, h2, h3, h4, h5, h6, p, li) {
+      @apply text-foreground;
+      /* This uses your --foreground variable */
+    }
 
     [data-invalid="true"] & {
       @apply border-destructive ring-destructive/20;
