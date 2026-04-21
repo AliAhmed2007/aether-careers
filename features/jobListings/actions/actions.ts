@@ -6,13 +6,14 @@ import { redirect } from "next/navigation";
 import { insertJobListing } from "../db/jobListings";
 
 export async function createJobListing(unsafeData: z.infer<typeof jobListingSchema>) {
-    const { orgId } = getCurrentOrganization()
+    const { orgId } = await getCurrentOrganization()
     if (!orgId) {
         return {
             error: true,
-            message: "You don't have permission to create a job listing",
+            message: "You don't have permission to create a job listing (You have to own an organization)",
         }
     }
+
 
     const { success, data } = jobListingSchema.safeParse(unsafeData)
     if (!success) {

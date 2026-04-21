@@ -32,7 +32,6 @@ import { StateSelectItems } from "./StateSelectItems";
 import { MarkdownEditor } from "@/components/markdown/MarkdownEditor";
 import { createJobListing } from "../actions/actions";
 import { toast } from "sonner";
-// import { createJobListing, updateJobListing } from "../actions/actions";
 
 const UNSELECT_STATE_VALUE = "none";
 
@@ -207,6 +206,9 @@ export default function JobListingForm({
                     )}
                     <StateSelectItems />
                   </SelectContent>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
                 </Select>
               )}
             />
