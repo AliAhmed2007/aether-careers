@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { db } from "@/drizzle/db";
 import { JobListingTable, JobListingType } from "@/drizzle/schema";
 import { JobListingBadges } from "@/features/jobListings/components/JobListingBadges";
@@ -6,7 +7,9 @@ import { getJobListingIdTag } from "@/features/jobListings/db/cache/jobListings"
 import { formatJobListingStatus } from "@/features/jobListings/lib/formatters";
 import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
 import { and, eq } from "drizzle-orm";
+import { EditIcon } from "lucide-react";
 import { cacheTag } from "next/cache";
+import Link from "next/link";
 import React, { Suspense } from "react";
 
 type Props = {
@@ -34,12 +37,19 @@ async function SuspendedPage({ params }: Props) {
       <div className="flex items-center justify-between gap-4 @max-4xl:flex-col @max-4xl:items-start">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            {jobListing.title}
+            {jobListing?.title}
           </h1>
           <div className="flex flex-wrap gap-2 mt-2">
             <Badge>{formatJobListingStatus(jobListing.status)}</Badge>
             <JobListingBadges jobListing={jobListing} />
           </div>
+        </div>
+        <div className="flex items-center gap-2 empty:mt-4">
+          <Button asChild variant="outline">
+            <Link href={`/employer/job-listings/${jobListing?.id}/edit`}>
+              <EditIcon className="size-4"/>
+            </Link>
+          </Button>
         </div>
       </div>
     </div>
