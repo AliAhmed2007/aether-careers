@@ -1,9 +1,8 @@
-"use client";
-import { cn } from "@/lib/utils";
+"use client"
+import { cn } from "@/lib/utils"
 import {
   BlockTypeSelect,
   BoldItalicUnderlineToggles,
-  diffSourcePlugin,
   headingsPlugin,
   InsertTable,
   InsertThematicBreak,
@@ -17,27 +16,23 @@ import {
   tablePlugin,
   thematicBreakPlugin,
   toolbarPlugin,
-} from "@mdxeditor/editor";
-import { Ref } from "react";
-// import { markdownClassNames } from "./MarkdownRenderer"
-import { useTheme } from "next-themes";
+} from "@mdxeditor/editor"
+import { Ref } from "react"
+import { markdownClassNames } from "./MarkdownRenderer"
+import { useTheme } from "next-themes"
 
 export default function InternalMarkdownEditor({
   ref,
   className,
   ...props
 }: MDXEditorProps & { ref?: Ref<MDXEditorMethods> }) {
-  const isDarkMode = useTheme().resolvedTheme === "dark";
+  const isDarkMode = useTheme()
 
   return (
     <MDXEditor
       {...props}
       ref={ref}
-      className={cn(
-        "prose max-w-none",
-        isDarkMode ? "dark-theme prose-invert" : "",
-        className,
-      )}
+      className={cn(markdownClassNames, isDarkMode && "dark-theme", className)}
       suppressHtmlProcessing
       plugins={[
         headingsPlugin(),
@@ -45,7 +40,6 @@ export default function InternalMarkdownEditor({
         quotePlugin(),
         thematicBreakPlugin(),
         markdownShortcutPlugin(),
-        diffSourcePlugin({ viewMode: "rich-text" }),
         tablePlugin(),
         toolbarPlugin({
           toolbarContents: () => (
@@ -60,5 +54,5 @@ export default function InternalMarkdownEditor({
         }),
       ]}
     />
-  );
+  )
 }
