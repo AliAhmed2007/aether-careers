@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/sidebar";
 import SidebarOrganizationButton from "@/features/organizations/components/SidebarOrganizationButton";
 import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
-import { ClipboardListIcon, PlusIcon } from "lucide-react";
+import { LayoutDashboard, PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ReactNode, Suspense } from "react";
 
 const jobSeekerLinks: SidebarItemType[] = [
-  { href: "/", icon: <ClipboardListIcon />, label: "Job Board" },
+  { href: "/employer", icon: <LayoutDashboard />, label: "Employer Dashboard" },
 ];
 
 export default function EmployerLayout({ children }: { children: ReactNode }) {
@@ -28,7 +28,7 @@ export default function EmployerLayout({ children }: { children: ReactNode }) {
 
 async function EmployerLayoutSuspense({ children }: { children: ReactNode }) {
   const { orgId } = await getCurrentOrganization();
-  
+
   if (orgId == null) redirect("/organizations/select");
   return (
     <AppSidebar

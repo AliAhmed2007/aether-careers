@@ -16,6 +16,7 @@ export interface SidebarItemType {
   label: string;
   authStatus?: "signedIn" | "signedOut";
 }
+
 export default function SidebarNavMenuGroup({
   items,
   className,
