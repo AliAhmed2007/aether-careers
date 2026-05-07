@@ -33,7 +33,7 @@ export async function updateJobListing(
       organizationId: JobListingTable.organizationId,
     })
 
-  revalidateJobListingCache(updatedListing)
+  revalidateJobListingCache(updatedListing.id)
 
   return updatedListing
 }

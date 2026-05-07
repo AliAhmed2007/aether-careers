@@ -1,11 +1,21 @@
+import { ActionButton } from "@/components/ActionButton";
 import AsyncIf from "@/components/AsyncIf";
 import { MarkdownPartial } from "@/components/markdown/MarkdonwPartial";
 import { MarkdownRenderer } from "@/components/markdown/MarkdownRenderer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { db } from "@/drizzle/db";
-import { JobListingTable, JobListingType } from "@/drizzle/schema";
+import {
+  JobListingStatus,
+  JobListingTable,
+  JobListingType,
+} from "@/drizzle/schema";
+import { toggleJobListingStatus } from "@/features/jobListings/actions/actions";
 import { JobListingBadges } from "@/features/jobListings/components/JobListingBadges";
 import { getJobListingIdTag } from "@/features/jobListings/db/cache/jobListings";
 import { formatJobListingStatus } from "@/features/jobListings/lib/formatters";
@@ -48,6 +58,7 @@ async function SuspendedPage({ params }: Props) {
           <div className="flex flex-wrap gap-2 mt-2">
             <Badge>{formatJobListingStatus(jobListing.status)}</Badge>
             <JobListingBadges jobListing={jobListing} />
+            <StatusUpdateButton status={jobListing.status} id={jobListing.id} />
           </div>
         </div>
         <AsyncIf
@@ -104,7 +115,9 @@ function StatusUpdateButton({
 
   return (
     <AsyncIf
-      condition={() => hasOrgUserPermission("org:job_listing:job_listing_change_status")}
+      condition={() =>
+        hasOrgUserPermission("org:job_listing:job_listing_change_status")
+      }
     >
       {getNextJobListingStatus(status) === "published" ? (
         <AsyncIf
