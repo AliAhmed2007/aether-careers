@@ -4,19 +4,19 @@ import { db } from "@/drizzle/db"
 import { eq } from "drizzle-orm"
 
 export async function insertJobListing(
-    jobListing: typeof JobListingTable.$inferInsert
+  jobListing: typeof JobListingTable.$inferInsert
 ) {
-    const [newListing] = await db
-        .insert(JobListingTable)
-        .values(jobListing)
-        .returning({
-            id: JobListingTable.id,
-            organizationId: JobListingTable.organizationId,
-        })
+  const [newListing] = await db
+    .insert(JobListingTable)
+    .values(jobListing)
+    .returning({
+      id: JobListingTable.id,
+      organizationId: JobListingTable.organizationId,
+    })
 
-    revalidateJobListingCache(newListing)
+  revalidateJobListingCache(newListing)
 
-    return newListing
+  return newListing
 }
 
 
@@ -36,4 +36,16 @@ export async function updateJobListing(
   revalidateJobListingCache(updatedListing.id)
 
   return updatedListing
+}
+
+export async function deletejobListing(id: string) {
+  const [deletedJobListing] = await db
+    .delete(JobListingTable)
+    .where(eq(JobListingTable.id, id))
+    .returning({
+      id: JobListingTable.id,
+      organizationId: JobListingTable.organizationId,
+    })
+
+  return deletedJobListing
 }

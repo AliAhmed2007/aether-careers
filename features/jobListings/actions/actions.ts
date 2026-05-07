@@ -3,7 +3,7 @@ import z from "zod";
 import { jobListingSchema } from "./schemas";
 import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
 import { redirect } from "next/navigation";
-import { insertJobListing, updateJobListing as updateJobListingDb } from "../db/jobListings";
+import { insertJobListing, updateJobListing as updateJobListingDb, deletejobListing as deletejobListingDb } from "../db/jobListings";
 import { cacheTag } from "next/cache";
 import { getJobListingIdTag, revalidateJobListingCache } from "../db/cache/jobListings";
 import { db } from "@/drizzle/db";
@@ -12,7 +12,7 @@ import { and, eq } from "drizzle-orm";
 import { hasOrgUserPermission } from "@/services/clerk/lib/orgUserPermissions";
 import { error } from "console";
 import { getNextJobListingStatus } from "../lib/utils";
-import { hasReachedMaxPublishedJobListings } from "../lib/planFeatures";
+import { hasReachedMaxFeaturedJobListings, hasReachedMaxPublishedJobListings } from "../lib/planFeatures";
 import { revalidatePath } from "next/cache";
 
 export async function createJobListing(unsafeData: z.infer<typeof jobListingSchema>) {
@@ -98,7 +98,7 @@ async function getJobListing(id: string, orgId: string) {
 export async function toggleJobListingStatus(id: string) {
     const error = {
         error: true,
-        message: "You don't have permission to update this job listing",
+        message: "You don't have permission to update this job listing's status",
     }
     const { orgId } = await getCurrentOrganization()
 
@@ -134,4 +134,58 @@ export async function toggleJobListingStatus(id: string) {
 
     revalidatePath(`/employer/job-listings/${id}`)
     return { error: false }
+}
+
+
+export async function toggleFeaturedJobListing(id: string) {
+    const error = {
+        error: true,
+        message: "You don't have permission to update this job listing's featured status",
+    }
+    const { orgId } = await getCurrentOrganization()
+
+    if (!orgId) return error;
+
+
+    const jobListing = await getJobListing(id, orgId)
+
+    if (jobListing == null) {
+        return {
+            error: true,
+            message: "There was an error updating your job listing",
+        }
+    }
+
+    const newFeaturedStatus = !(jobListing.isFeatured)
+
+    if (
+        !(await hasOrgUserPermission("org:job_listing:job_listing_change_status")) ||
+        (newFeaturedStatus && (await hasReachedMaxFeaturedJobListings()))
+    ) {
+        return error
+    }
+
+    await updateJobListingDb(id, {
+        isFeatured: newFeaturedStatus,
+    })
+
+    revalidatePath(`/employer/job-listings/${id}`)
+    return { error: false }
+}
+
+export async function deletejobListing(id: string) {
+    const error = {
+        error: true,
+        message: "You don't have permission to delete this job listing",
+    }
+    const { orgId } = await getCurrentOrganization()
+
+    if (!orgId) return error;
+
+    if (!(await hasOrgUserPermission("org:job_listing:job_listing_delete"))) {
+        return error
+    }
+
+    deletejobListingDb(id);
+    return redirect("/employer/")
 }
