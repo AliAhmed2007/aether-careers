@@ -1,41 +1,74 @@
-import AppSidebar from "@/components/sidebar/AppSidebar";
-import SidebarNavMenuGroup, {
-  type SidebarItemType,
-} from "@/components/sidebar/SidebarNavMenuGroup";
 import {
   SidebarGroup,
   SidebarGroupAction,
+  SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { db } from "@/drizzle/db";
+import {
+  JobListingApplicationTable,
+  JobListingStatus,
+  JobListingTable,
+} from "@/drizzle/schema";
+import { getJobListingOrganizationTag } from "@/features/jobListings/db/cache/jobListings";
+import { sortJobListingsByStatus } from "@/features/jobListings/lib/utils";
 import SidebarOrganizationButton from "@/features/organizations/components/SidebarOrganizationButton";
 import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
-import { LayoutDashboard, PlusIcon } from "lucide-react";
+import { hasOrgUserPermission } from "@/services/clerk/lib/orgUserPermissions";
+import { count, desc, eq } from "drizzle-orm";
+import { ClipboardListIcon, PlusIcon } from "lucide-react";
+import { cacheTag } from "next/cache";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ReactNode, Suspense } from "react";
-
-const jobSeekerLinks: SidebarItemType[] = [
-  { href: "/employer", icon: <LayoutDashboard />, label: "Employer Dashboard" },
-];
+import { JobListingMenuGroup } from "./_JobListingMenuGroup";
+import { getJobListingApplicationJobListingTag } from "@/features/jobListingApplication/db/cache/jobListingApplication";
+import AsyncIf from "@/components/AsyncIf";
+import AppSidebar from "@/components/sidebar/AppSidebar";
+import SidebarNavMenuGroup from "@/components/sidebar/SidebarNavMenuGroup";
 
 export default function EmployerLayout({ children }: { children: ReactNode }) {
   return (
     <Suspense>
-      <EmployerLayoutSuspense>{children}</EmployerLayoutSuspense>
+      <LayoutSuspense>{children}</LayoutSuspense>
     </Suspense>
   );
 }
 
-async function EmployerLayoutSuspense({ children }: { children: ReactNode }) {
+async function LayoutSuspense({ children }: { children: ReactNode }) {
   const { orgId } = await getCurrentOrganization();
+  if (orgId == null) return redirect("/organizations/select");
 
-  if (orgId == null) redirect("/organizations/select");
   return (
     <AppSidebar
       content={
         <>
-          <CurrentJobListings />
-          <SidebarNavMenuGroup items={jobSeekerLinks} className="mt-auto" />
+          <SidebarGroup>
+            <SidebarGroupLabel>Job Listings</SidebarGroupLabel>
+            <AsyncIf
+              condition={() => hasOrgUserPermission("org:job_listing:job_listing_create")}
+            >
+              <SidebarGroupAction title="Add Job Listing" asChild>
+                <Link href="/employer/job-listings/new">
+                  <PlusIcon /> <span className="sr-only">Add Job Listing</span>
+                </Link>
+              </SidebarGroupAction>
+            </AsyncIf>
+            <SidebarGroupContent className="group-data-[state=collapsed]:hidden">
+              <Suspense>
+                <JobListingMenu orgId={orgId} />
+              </Suspense>
+            </SidebarGroupContent>
+          </SidebarGroup>
+          <SidebarNavMenuGroup
+            className="mt-auto"
+            items={[
+              { href: "/", icon: <ClipboardListIcon />, label: "Job Board" },
+            ]}
+          />
         </>
       }
       footerBtn={<SidebarOrganizationButton />}
@@ -45,15 +78,66 @@ async function EmployerLayoutSuspense({ children }: { children: ReactNode }) {
   );
 }
 
-function CurrentJobListings() {
-  return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Job Listings</SidebarGroupLabel>
-      <SidebarGroupAction title="Add Job Listing" asChild>
-        <Link href="/employer/job-listings/new">
-          <PlusIcon /> <span className="sr-only">Add Job Listing</span>
-        </Link>
-      </SidebarGroupAction>
-    </SidebarGroup>
-  );
+async function JobListingMenu({ orgId }: { orgId: string }) {
+  const jobListings = await getJobListings(orgId);
+
+  if (
+    jobListings.length === 0 &&
+    (await hasOrgUserPermission("org:job_listing:job_listing_create"))
+  ) {
+    return (
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild>
+            <Link href="/employer/job-listings/new">
+              <PlusIcon />
+              <span>Create your first job listing</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    );
+  }
+
+  return Object.entries(Object.groupBy(jobListings, (j) => j.status))
+    .sort(([a], [b]) => {
+      return sortJobListingsByStatus(
+        a as JobListingStatus,
+        b as JobListingStatus,
+      );
+    })
+    .map(([status, jobListings]) => (
+      <JobListingMenuGroup
+        key={status}
+        status={status as JobListingStatus}
+        jobListings={jobListings}
+      />
+    ));
+}
+
+async function getJobListings(orgId: string) {
+  "use cache";
+  cacheTag(getJobListingOrganizationTag(orgId));
+
+  const data = await db
+    .select({
+      id: JobListingTable.id,
+      title: JobListingTable.title,
+      status: JobListingTable.status,
+      applicationCount: count(JobListingApplicationTable.userId),
+    })
+    .from(JobListingTable)
+    .where(eq(JobListingTable.organizationId, orgId))
+    .leftJoin(
+      JobListingApplicationTable,
+      eq(JobListingTable.id, JobListingApplicationTable.jobListingId),
+    )
+    .groupBy(JobListingApplicationTable.jobListingId, JobListingTable.id)
+    .orderBy(desc(JobListingTable.createdAt));
+
+  data.forEach((jobListing) => {
+    cacheTag(getJobListingApplicationJobListingTag(jobListing.id));
+  });
+
+  return data;
 }

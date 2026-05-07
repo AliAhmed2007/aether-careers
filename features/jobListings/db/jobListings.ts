@@ -1,5 +1,5 @@
 import { JobListingTable } from "@/drizzle/schema"
-import { revalidateJobListingCache } from "./cache/jobListings"
+import { revalidateJobListingCache, updateJobListingCache } from "./cache/jobListings"
 import { db } from "@/drizzle/db"
 import { eq } from "drizzle-orm"
 
@@ -14,7 +14,7 @@ export async function insertJobListing(
       organizationId: JobListingTable.organizationId,
     })
 
-  revalidateJobListingCache(newListing)
+  updateJobListingCache(newListing)
 
   return newListing
 }
@@ -33,7 +33,7 @@ export async function updateJobListing(
       organizationId: JobListingTable.organizationId,
     })
 
-  revalidateJobListingCache(updatedListing.id)
+  updateJobListingCache(updatedListing)
 
   return updatedListing
 }
@@ -46,6 +46,8 @@ export async function deletejobListing(id: string) {
       id: JobListingTable.id,
       organizationId: JobListingTable.organizationId,
     })
+
+  updateJobListingCache(deletedJobListing)
 
   return deletedJobListing
 }

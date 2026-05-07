@@ -5,15 +5,13 @@ import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
 import { redirect } from "next/navigation";
 import { insertJobListing, updateJobListing as updateJobListingDb, deletejobListing as deletejobListingDb } from "../db/jobListings";
 import { cacheTag } from "next/cache";
-import { getJobListingIdTag, revalidateJobListingCache } from "../db/cache/jobListings";
+import { getJobListingIdTag, updateJobListingCache } from "../db/cache/jobListings";
 import { db } from "@/drizzle/db";
 import { JobListingTable } from "@/drizzle/schema";
 import { and, eq } from "drizzle-orm";
 import { hasOrgUserPermission } from "@/services/clerk/lib/orgUserPermissions";
-import { error } from "console";
 import { getNextJobListingStatus } from "../lib/utils";
 import { hasReachedMaxFeaturedJobListings, hasReachedMaxPublishedJobListings } from "../lib/planFeatures";
-import { revalidatePath } from "next/cache";
 
 export async function createJobListing(unsafeData: z.infer<typeof jobListingSchema>) {
     const { orgId } = await getCurrentOrganization()
@@ -41,6 +39,7 @@ export async function createJobListing(unsafeData: z.infer<typeof jobListingSche
         status: "draft",
     })
 
+    // Note: insertJobListing already calls updateJobListingCache internally
     redirect(`/employer/job-listings/${jobListing.id}`)
 }
 
@@ -132,7 +131,7 @@ export async function toggleJobListingStatus(id: string) {
                 : undefined,
     })
 
-    revalidatePath(`/employer/job-listings/${id}`)
+    updateJobListingCache({ id, organizationId: orgId })
     return { error: false }
 }
 
@@ -169,7 +168,7 @@ export async function toggleFeaturedJobListing(id: string) {
         isFeatured: newFeaturedStatus,
     })
 
-    revalidatePath(`/employer/job-listings/${id}`)
+    updateJobListingCache({ id, organizationId: orgId })
     return { error: false }
 }
 
