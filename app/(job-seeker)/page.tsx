@@ -1,7 +1,13 @@
-function JobSeekerHome() {
+function JobSeekerHome({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[]>>;
+}) {
   return (
-    <div>Hi - Job Seeker</div>
-  )
+    <div className="m-4">
+      <JobListingItems searchParams={searchParams} />
+    </div>
+  );
 }
 
-export default JobSeekerHome
+export default JobSeekerHome;
