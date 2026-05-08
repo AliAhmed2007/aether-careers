@@ -1,3 +1,5 @@
+import { JobListingItems } from "./_shared/JobListingItems";
+
 function JobSeekerHome({
   searchParams,
 }: {

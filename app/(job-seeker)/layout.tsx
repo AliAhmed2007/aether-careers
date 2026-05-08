@@ -3,7 +3,12 @@ import SidebarNavMenuGroup, {
   type SidebarItemType,
 } from "@/components/sidebar/SidebarNavMenuGroup";
 import SidebarUserButton from "@/features/users/components/SidebarUserButton";
-import { BrainCircuitIcon, ClipboardListIcon, LayoutDashboard, LogInIcon } from "lucide-react";
+import {
+  BrainCircuitIcon,
+  ClipboardListIcon,
+  LayoutDashboard,
+  LogInIcon,
+} from "lucide-react";
 import { ReactNode } from "react";
 
 const jobSeekerLinks: SidebarItemType[] = [
@@ -27,11 +32,20 @@ const jobSeekerLinks: SidebarItemType[] = [
   },
 ];
 
-function JobSeekerLayout({ children }: { children: ReactNode }) {
+function JobSeekerLayout({
+  children,
+  sidebar,
+}: {
+  children: ReactNode;
+  sidebar: ReactNode;
+}) {
   return (
     <AppSidebar
       content={
-        <SidebarNavMenuGroup items={jobSeekerLinks} className="mt-auto" />
+        <>
+          {sidebar}
+          <SidebarNavMenuGroup items={jobSeekerLinks} className="mt-auto" />
+        </>
       }
       footerBtn={<SidebarUserButton />}
     >
